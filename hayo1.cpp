@@ -6,16 +6,17 @@ struct Player{
     int score;
 };
 
-int binSearch(Player P[], int n, string name){
-    int l = 0, r = n-1;
+// binary search
+int binSearch(Player P[], int n, string key){
+    int l = 0, r = n-1, mid;
     while(l <= r){
-        int mid = (l+r)/2;
-        if(P[mid].name == name){
+        mid = (l+r)/2;
+        if(P[mid].name == key){
             return mid;
-        } else if(P[mid].name < name){
-            l = mid+1;
+        } else if (P[mid].name < key){
+            l = mid + 1;
         } else {
-            r = mid-1;
+            r = mid - 1;
         }
     }
     return -1;
