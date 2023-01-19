@@ -2,8 +2,6 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdlib.h>
-#include <math.h>
 
 int monthlyInterest(int amount, double interestRate)
 {
@@ -27,12 +25,55 @@ void deposit()
     {
         interest = monthlyInterest(amount, interestRate);
         amount += interest;
-        printf("| %-5d | Rp %-10d | Rp %-10d |\n", i+1, interest, amount);
+        printf("| Month |  Interest  |  Total Amount  |\n");
+        printf("| %-5d | Rp %-7d | Rp %-11d |\n", i+1, interest, amount);
+    }
+}
+
+double savingInterestRate(int month, int monthlyAmount){
+    if(month <= 12){
+        return 0.01;
+    }
+
+    if(monthlyAmount<1000000){
+        if(month <= 36)
+            return 0.01;
+        else if (month <= 60)
+            return 0.012;
+        else
+            return 0.015;
+    } else {
+        if(month <= 36)
+            return 0.012;
+        else if (month <= 60)
+            return 0.015;
+        else
+            return 0.017;
     }
 }
 
 void plannedSaving()
 {
+    int initialAmount, monthlyAmount, duration, totalSaving = 0, interest;
+    double interestRate;
+    char savingTitle[100];
+
+    printf("Saving Title: ");
+    scanf("%[^\n]", savingTitle);
+    fflush(stdin);
+    printf("Monthly Amount: ");
+    scanf("%d", &monthlyAmount);
+    fflush(stdin);
+    printf("Duration: ");
+    scanf("%d", &duration);
+    fflush(stdin);
+
+    for (int i = 0; i < duration; i++)
+    { 
+        interestRate = savingInterestRate(i+1, monthlyAmount);
+        totalSaving += monthlyAmount * (1 + interestRate);
+        printf("| %-5d | %-5.1lf%% | Rp %-10d |\n", i+1, interestRate*100, totalSaving);
+    }
 }
 
 int main()
@@ -61,7 +102,7 @@ int main()
             plannedSaving();
             break;
         default:
-            printf("Please enter a Valid Option\n\n");
+            printf("Please enter a Valid Option !\n\n");
             valid = !valid;
             break;
         }
