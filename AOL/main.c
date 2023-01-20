@@ -11,6 +11,7 @@ int monthlyInterest(int amount, double interestRate)
 void deposit()
 {
     int duration, amount, interest;
+    FILE *depositReport = fopen("Deposit_Report.txt", "w");
     double interestRate;
     printf("Amount: ");
     scanf("%d", &amount);
@@ -21,13 +22,20 @@ void deposit()
     printf("Duration: ");
     scanf("%d", &duration);
 
+    printf("+-------+------------+----------------+\n| Month |  Interest  |  Total Amount  |\n+-------+------------+----------------+\n");
+    fprintf(depositReport, "+-------+------------+----------------+\n| Month |  Interest  |  Total Amount  |\n+-------+------------+----------------+\n");
+
     for (int i = 0; i < duration; i++)
     {
         interest = monthlyInterest(amount, interestRate);
         amount += interest;
-        printf("| Month |  Interest  |  Total Amount  |\n");
         printf("| %-5d | Rp %-7d | Rp %-11d |\n", i+1, interest, amount);
+        fprintf(depositReport, "| %-5d | Rp %-7d | Rp %-11d |\n", i+1, interest, amount);
     }
+    printf("+-------+------------+----------------+\n");
+    fprintf(depositReport, "+-------+------------+----------------+\n");
+
+    fclose(depositReport);
 }
 
 double savingInterestRate(int month, int monthlyAmount){
@@ -57,7 +65,7 @@ void plannedSaving()
     int initialAmount, monthlyAmount, duration, totalSaving = 0, interest;
     double interestRate;
     char savingTitle[100];
-
+    FILE *plannedSavingReport = fopen("Planned_Saving_Report.txt", "w");
     printf("Saving Title: ");
     scanf("%[^\n]", savingTitle);
     fflush(stdin);
@@ -68,12 +76,21 @@ void plannedSaving()
     scanf("%d", &duration);
     fflush(stdin);
 
+    printf("Report for '%s' Saving Plan\n", savingTitle);
+    fprintf(plannedSavingReport, "Report for '%s' Saving Plan\n", savingTitle);
+    printf("+-------+------+----------------+\n| Month | Rate |  Total Amount  |\n+-------+------+----------------+\n");
+    fprintf(plannedSavingReport, "+-------+------+----------------+\n| Month | Rate |  Total Amount  |\n+-------+------+----------------+\n");
+
     for (int i = 0; i < duration; i++)
     { 
         interestRate = savingInterestRate(i+1, monthlyAmount);
         totalSaving += monthlyAmount * (1 + interestRate);
-        printf("| %-5d | %-5.1lf%% | Rp %-10d |\n", i+1, interestRate*100, totalSaving);
+        printf("| %-5d | %-3.1lf%% | Rp %-11d |\n", i+1, interestRate*100, totalSaving);
+        fprintf(plannedSavingReport, "| %-5d | %-3.1lf%% | Rp %-11d |\n", i+1, interestRate*100, totalSaving);
     }
+    printf("+-------+------+----------------+\n");
+    fprintf(plannedSavingReport, "+-------+------+----------------+\n");
+    fclose(plannedSavingReport);
 }
 
 int main()
