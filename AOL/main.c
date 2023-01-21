@@ -5,14 +5,14 @@
 
 int monthlyInterest(int amount, double interestRate)
 {
-    return amount * (interestRate/100) / 12 * 80/100;
+    return amount * interestRate / 12 * 80/100;
 }
 
 void deposit()
 {
     int duration, amount, interest;
-    FILE *depositReport = fopen("Deposit_Report.txt", "w");
     double interestRate;
+    FILE *depositReport = fopen("Deposit_Report.txt", "w");
 
     // Deposit amount must be at least 1,000,000 (like most of the bank in Indonesia)
     do
@@ -24,25 +24,19 @@ void deposit()
     } while (amount < 1000000);
     fflush(stdin);
 
-    // Interest Rate can't be 0% or more than 10% (like most of the bank in Indonesia)
-    do
-    {
-        printf("Interest Rate: ");
-        scanf("%lf", &interestRate);
-        if(interestRate <= 0 || interestRate > 10)
-            printf("Interest Rate can't be lower or equeal than 0%% or more than 10%%\n");
-    } while (interestRate <= 0 || interestRate > 10);
-    fflush(stdin);
+    interestRate = 0.05; // Assumption: Bee Bank's annual interest rate for deposit is 5%
 
     // Duration must be at least 1 month
     do
     {
-        printf("Duration (month): ");
+        printf("Duration (in months): ");
         scanf("%d", &duration);
         if(duration < 1)
             printf("Duration must be at least 1 month\n");
     } while (duration < 1);
 
+    printf("Deposit Report\n");
+    fprintf(depositReport, "Deposit Report\n");
     printf("+-------+------------+----------------+\n| Month |  Interest  |  Total Amount  |\n+-------+------------+----------------+\n");
     fprintf(depositReport, "+-------+------------+----------------+\n| Month |  Interest  |  Total Amount  |\n+-------+------------+----------------+\n");
 
@@ -65,16 +59,16 @@ double savingInterestRate(int month, int monthlyAmount){
     }
 
     if(monthlyAmount<1000000){
-        if(month <= 36)
+        if(month < 36)
             return 0.01;
-        else if (month <= 60)
+        else if (month < 60)
             return 0.012;
         else
             return 0.015;
     } else {
-        if(month <= 36)
+        if(month < 36)
             return 0.012;
-        else if (month <= 60)
+        else if (month < 60)
             return 0.015;
         else
             return 0.017;
@@ -83,7 +77,7 @@ double savingInterestRate(int month, int monthlyAmount){
 
 void plannedSaving()
 {
-    int initialAmount, monthlyAmount, duration, totalSaving = 0, interest;
+    int initialAmount, monthlyAmount, duration, totalSaving = 0, interest, autodebitDate;
     double interestRate;
     char savingTitle[100];
     FILE *plannedSavingReport = fopen("Planned_Saving_Report.txt", "w");
@@ -93,7 +87,6 @@ void plannedSaving()
     {
         printf("Title: ");
         scanf("%[^\n]", savingTitle);
-        fflush(stdin);
         if(strlen(savingTitle) < 5 || strlen(savingTitle) > 30)
             printf("Title length must be 5 - 30 characters\n");
     } while (strlen(savingTitle) < 5 || strlen(savingTitle) > 30);
@@ -112,27 +105,37 @@ void plannedSaving()
     // Duration must be at least 1 year / 12 months
     do
     {
-        printf("Duration (month): ");
+        printf("Duration (in months): ");
         scanf("%d", &duration);
         if(duration < 12)
             printf("Duration must be at least 1 year\n");
     } while (duration < 12);
     fflush(stdin);
 
+    // Autodebit Date must be between 1 - 28
+    do
+    {
+        printf("Autodebit Date: ");
+        scanf("%d", &autodebitDate);
+        if(autodebitDate < 1 || autodebitDate > 28)
+            printf("Autodebit Date must be between 1 - 28\n");
+    } while (autodebitDate < 1 || autodebitDate > 28);
+
     printf("Report for '%s' Saving Plan\n", savingTitle);
     fprintf(plannedSavingReport, "Report for '%s' Saving Plan\n", savingTitle);
-    printf("+-------+------+----------------+\n| Month | Rate |  Total Amount  |\n+-------+------+----------------+\n");
-    fprintf(plannedSavingReport, "+-------+------+----------------+\n| Month | Rate |  Total Amount  |\n+-------+------+----------------+\n");
+    printf("+-------+----------+----------------+\n| Month | Interest |  Total Amount  |\n+-------+----------+----------------+\n");
+    fprintf(plannedSavingReport, "+-------+----------+----------------+\n| Month | Interest |  Total Amount  |\n+-------+----------+----------------+\n");
 
     for (int i = 0; i < duration; i++)
     { 
         interestRate = savingInterestRate(i+1, monthlyAmount);
-        totalSaving += monthlyAmount * (1 + interestRate);
-        printf("| %-5d | %-3.1lf%% | Rp %-11d |\n", i+1, interestRate*100, totalSaving);
-        fprintf(plannedSavingReport, "| %-5d | %-3.1lf%% | Rp %-11d |\n", i+1, interestRate*100, totalSaving);
+        interest = monthlyAmount * interestRate;
+        totalSaving += monthlyAmount + interest;
+        printf("| %-5d | Rp %-5d | Rp %-11d |\n", i+1, interest, totalSaving);
+        fprintf(plannedSavingReport, "| %-5d | Rp %-5d | Rp %-11d |\n", i+1, interest, totalSaving);
     }
-    printf("+-------+------+----------------+\n");
-    fprintf(plannedSavingReport, "+-------+------+----------------+\n");
+    printf("+-------+----------+----------------+\n");
+    fprintf(plannedSavingReport, "+-------+----------+----------------+\n");
     fclose(plannedSavingReport);
 }
 
@@ -173,6 +176,10 @@ int main()
         {
             printf("Do you want to do another transaction ?(Y/n): ");
             scanf("%c", &repeat);
+            if (repeat != 'Y' && repeat != 'y' && repeat != 'N' && repeat != 'n')
+            {
+                printf("Please enter a valid option !\n");
+            }
             fflush(stdin);
         } while (repeat != 'Y' && repeat != 'y' && repeat != 'N' && repeat != 'n');
     } while ('Y' == toupper(repeat));

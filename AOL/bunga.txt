@@ -1,0 +1,17 @@
+ // Interest Rate can't be 0% or more than 10% (like most of the bank in Indonesia)
+    do
+    {
+        printf("Interest Rate: ");
+        scanf("%lf", &interestRate);
+        if(interestRate <= 0 || interestRate > 10)
+            printf("Interest Rate can't be lower or equal than 0%% or more than 10%%\n");
+    } while (interestRate <= 0 || interestRate > 10);
+    fflush(stdin);
+
+    Do
+        Display "Interest Rate: "
+        Input interestRate
+        If (interestRate < 0 OR interestRate > 10)
+            Display "Interest Rate can't be lower or equal than 0% or more than 10%"
+        End If
+    While (interestRate < 0 OR interestRate > 10)
