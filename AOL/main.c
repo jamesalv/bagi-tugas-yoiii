@@ -13,14 +13,35 @@ void deposit()
     int duration, amount, interest;
     FILE *depositReport = fopen("Deposit_Report.txt", "w");
     double interestRate;
-    printf("Amount: ");
-    scanf("%d", &amount);
+
+    // Deposit amount must be at least 1,000,000 (like most of the bank in Indonesia)
+    do
+    {
+        printf("Amount: ");
+        scanf("%d", &amount);
+        if(amount < 1000000)
+            printf("Deposit amount must be at least 1,000,000\n");
+    } while (amount < 1000000);
     fflush(stdin);
-    printf("Interest Rate: ");
-    scanf("%lf", &interestRate);
+
+    // Interest Rate can't be 0% or more than 10% (like most of the bank in Indonesia)
+    do
+    {
+        printf("Interest Rate: ");
+        scanf("%lf", &interestRate);
+        if(interestRate <= 0 || interestRate > 10)
+            printf("Interest Rate can't be lower or equeal than 0%% or more than 10%%\n");
+    } while (interestRate <= 0 || interestRate > 10);
     fflush(stdin);
-    printf("Duration: ");
-    scanf("%d", &duration);
+
+    // Duration must be at least 1 month
+    do
+    {
+        printf("Duration (month): ");
+        scanf("%d", &duration);
+        if(duration < 1)
+            printf("Duration must be at least 1 month\n");
+    } while (duration < 1);
 
     printf("+-------+------------+----------------+\n| Month |  Interest  |  Total Amount  |\n+-------+------------+----------------+\n");
     fprintf(depositReport, "+-------+------------+----------------+\n| Month |  Interest  |  Total Amount  |\n+-------+------------+----------------+\n");
@@ -66,14 +87,36 @@ void plannedSaving()
     double interestRate;
     char savingTitle[100];
     FILE *plannedSavingReport = fopen("Planned_Saving_Report.txt", "w");
-    printf("Saving Title: ");
-    scanf("%[^\n]", savingTitle);
+
+    // Title length must be 5 - 30 characters
+    do
+    {
+        printf("Title: ");
+        scanf("%[^\n]", savingTitle);
+        fflush(stdin);
+        if(strlen(savingTitle) < 5 || strlen(savingTitle) > 30)
+            printf("Title length must be 5 - 30 characters\n");
+    } while (strlen(savingTitle) < 5 || strlen(savingTitle) > 30);
     fflush(stdin);
-    printf("Monthly Amount: ");
-    scanf("%d", &monthlyAmount);
+
+    // Monthly Amount must be at least 100,000
+    do
+    {
+        printf("Monthly Amount: ");
+        scanf("%d", &monthlyAmount);
+        if(monthlyAmount < 100000)
+            printf("Monthly Amount must be at least 100,000\n");
+    } while (monthlyAmount < 100000);
     fflush(stdin);
-    printf("Duration: ");
-    scanf("%d", &duration);
+
+    // Duration must be at least 1 year / 12 months
+    do
+    {
+        printf("Duration (month): ");
+        scanf("%d", &duration);
+        if(duration < 12)
+            printf("Duration must be at least 1 year\n");
+    } while (duration < 12);
     fflush(stdin);
 
     printf("Report for '%s' Saving Plan\n", savingTitle);
@@ -102,7 +145,7 @@ int main()
 
     do
     {
-        printf("Select Menu\n");
+        printf("Transaction Menu\n");
         printf("1. Deposit\n");
         printf("2. Planned Saving\n");
         printf("Choose Option: ");
@@ -126,8 +169,12 @@ int main()
         if (!valid)
             continue;
         fflush(stdin);
-        printf("\nDO YOU WANT TO DO ANOTHER TRANSACTION ?(Y/n): ");
-        scanf("%c", &repeat);
+        do
+        {
+            printf("Do you want to do another transaction ?(Y/n): ");
+            scanf("%c", &repeat);
+            fflush(stdin);
+        } while (repeat != 'Y' && repeat != 'y' && repeat != 'N' && repeat != 'n');
     } while ('Y' == toupper(repeat));
     printf("THANK YOU FOR USING OUR SERVICE\n");
     return 0;
