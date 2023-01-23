@@ -1,0 +1,11 @@
+10
+ilinois 9
+alabama 7
+denver 8
+dallas 8
+vancouver 9
+fjord 2
+bremen 4
+munchen 3
+delhie 6
+cairo 1
