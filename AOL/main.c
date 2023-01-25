@@ -81,9 +81,7 @@ void deposit()
         break;
     } while (true);
     fflush(stdin);
-    savingList[x].date.month = D.month;
-    savingList[x].date.day = D.day;
-    savingList[x].date.year = D.year;
+    savingList[x].date = D;
     savingList[x].type = 1;
     savingList[x].savingAmount = amount;
     strcpy(savingList[x].title, depoTitle);
@@ -97,7 +95,6 @@ void deposit()
     fprintf(depositReport, "| %-2d-%-2d-%-4d | Rp %-6d | Rp %-11d |\n", savingList[x].date.day, savingList[x].date.month, savingList[x].date.year, interest, amount);
     x++;
 
-
     for (int i = 0; i < duration; i++)
     {
         interest = monthlyInterest(amount, interestRate);
@@ -108,9 +105,7 @@ void deposit()
             D.month = 1;
             D.year += 1;
         }
-        savingList[x].date.month = D.month;
-        savingList[x].date.day = D.day;
-        savingList[x].date.year = D.year;
+        savingList[x].date = D;
         savingList[x].type = 1;
         savingList[x].savingAmount = amount;
         strcpy(savingList[x].title, depoTitle);
@@ -222,9 +217,7 @@ void plannedSaving()
             D.month = 1;
             D.year += 1;
         }
-        savingList[x].date.month = D.month;
-        savingList[x].date.day = D.day;
-        savingList[x].date.year = D.year;
+        savingList[x].date = D;
         savingList[x].type = 2;
         savingList[x].savingAmount = totalSaving;
         strcpy(savingList[x].title, savingTitle);
@@ -239,10 +232,114 @@ void plannedSaving()
     fclose(plannedSavingReport);
 }
 
-// Search Savings by Category & Date
+// Sort Savings by Date
+void sortSaving()
+{
+    struct saving temp;
+    for (int i = 0; i < x; i++)
+    {
+        for (int j = i + 1; j < x; j++)
+        {
+            if (savingList[i].date.year > savingList[j].date.year)
+            {
+                temp = savingList[i];
+                savingList[i] = savingList[j];
+                savingList[j] = temp;
+            }
+            else if (savingList[i].date.year == savingList[j].date.year)
+            {
+                if (savingList[i].date.month > savingList[j].date.month)
+                {
+                    temp = savingList[i];
+                    savingList[i] = savingList[j];
+                    savingList[j] = temp;
+                }
+                else if (savingList[i].date.month == savingList[j].date.month)
+                {
+                    if (savingList[i].date.day > savingList[j].date.day)
+                    {
+                        temp = savingList[i];
+                        savingList[i] = savingList[j];
+                        savingList[j] = temp;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Compare date for search process
+bool compareDate(struct Date check, struct Date start, struct Date end)
+{
+    if (check.year > start.year && check.year < end.year)
+        return true;
+    if ((check.year == start.year && check.month > start.month) ||
+        (check.year == end.year && check.month < end.month))
+        return true;
+    if ((check.month == start.month && check.day >= start.day) ||
+        (check.month == end.month && check.day <= end.day))
+        return true;
+
+    return false;
+}
+
+// Search All Saving
+void searchAll(struct Date D_Start, struct Date D_End)
+{
+    printf("+------------+----------------+----------------+-------------------------------------+\n|    Date    | Saving Amount  |  Saving Type   |             Saving Title            |\n+------------+----------------+----------------+-------------------------------------+\n");
+    for (int i = 0; i < x; i++)
+    {
+        if (compareDate(savingList[i].date, D_Start, D_End))
+        {
+            char type[20];
+            if (savingList[i].type == 1)
+                strcpy(type, "Deposit");
+            else
+                strcpy(type, "Planned Saving");
+            printf("| %-2d-%-2d-%-4d | Rp %-11d | %-14s | %-35s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, type, savingList[i].title);
+        }
+    }
+    printf("+------------+----------------+----------------+-------------------------------------+\n");
+}
+
+// Search Deposit
+void searchDeposit(struct Date D_Start, struct Date D_End)
+{
+    printf("+------------+----------------+--------------------------------+\n|    Date    | Saving Amount  |          Saving Title          |\n+------------+----------------+--------------------------------+\n");
+    for (int i = 0; i < x; i++)
+    {
+        if (savingList[i].type == 1 && compareDate(savingList[i].date, D_Start, D_End))
+        {
+            printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
+        }
+    }
+    printf("+------------+----------------+----------------+---------------+\n");
+}
+
+// Search Planned Saving
+void searchPlannedSaving(struct Date D_Start, struct Date D_End)
+{
+    printf("+------------+----------------+--------------------------------+\n|    Date    | Saving Amount  |          Saving Title          |\n+------------+----------------+--------------------------------+\n");
+    for (int i = 0; i < x; i++)
+    {
+        if (savingList[i].type == 2 && compareDate(savingList[i].date, D_Start, D_End))
+        {
+            printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
+        }
+    }
+    printf("+------------+----------------+----------------+---------------+\n");
+}
+
+// Search Process
 void searchsaving()
 {
-    // printf("Time Period\n");
+    struct Date D_Start, D_End;
+    printf("Time Period\n");
+    printf("From (dd-mm-yyyy): ");
+    scanf("%d-%d-%d", D_Start.day, D_Start.month, D_Start.year);
+    printf("To (dd-mm-yyyy): ");
+    scanf("%d-%d-%d", D_End.day, D_End.month, D_End.year);
+    fflush(stdin);
 
     printf("Type of saving:\n");
     printf("1. All\n");
@@ -252,39 +349,17 @@ void searchsaving()
     int option;
     scanf("%d", &option);
     fflush(stdin);
+
     switch (option)
     {
     case 1:
-        printf("+-------+----------+----------------+\n| Date | Saving Amount  | Saving Type | Saving Title |\n+-------+----------+----------------+\n");
-        for (int i = 0; i < x; i++)
-        {
-            char type[20];
-            if (savingList[i].type == 1)
-                strcpy(type, "Deposit");
-            else
-                strcpy(type, "Planned Saving");
-            printf("| %d-%d-%d | %d | %s | %s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, type, savingList[i].title);
-        }
+        searchAll(D_Start, D_End);
         break;
     case 2:
-        printf("+-------+----------+----------------+\n| Date | Saving Amount | Saving Title |\n+-------+----------+----------------+\n");
-        for (int i = 0; i < x; i++)
-        {
-            if (savingList[i].type == 1)
-            {
-                printf("| %d-%d-%d | %d | %s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
-            }
-        }
+        searchDeposit(D_Start, D_End);
         break;
     case 3:
-        printf("+-------+----------+----------------+\n| Date | Saving Amount | Saving Title |\n+-------+----------+----------------+\n");
-        for (int i = 0; i < x; i++)
-        {
-            if (savingList[i].type == 2)
-            {
-                printf("| %d-%d-%d | %d | %s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
-            }
-        }
+        searchPlannedSaving(D_Start, D_End);
         break;
     default:
         printf("Invalid Option\n");
@@ -335,6 +410,7 @@ int main()
         if (!valid)
             continue;
         fflush(stdin);
+        sortSaving();
         do
         {
             printf("Do you want to do another operation ?(Y/n): ");
