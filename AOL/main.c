@@ -34,6 +34,8 @@ int monthlyInterest(int amount, double interestRate)
 // Deposit Process
 void deposit()
 {
+    printf("+-------+\n|Deposit|\n+-------+\n");
+
     char depoTitle[32], filename[60];
     int duration, amount, interest;
     double interestRate;
@@ -45,8 +47,8 @@ void deposit()
         scanf("%[^\n]", depoTitle);
         if (strlen(depoTitle) < 5 || strlen(depoTitle) > 30)
             printf("Title length must be 5 - 30 characters\n");
+        fflush(stdin);
     } while (strlen(depoTitle) < 5 || strlen(depoTitle) > 30);
-    fflush(stdin);
     strcpy(depoTitleList[y], depoTitle);
     y++;
 
@@ -79,7 +81,7 @@ void deposit()
     {
         printf("Date of deposit (dd-mm-yyyy): ");
         scanf("%d-%d-%d", &D.day, &D.month, &D.year);
-        if (D.day < 1 || D.day > 28 || D.month < 1 || D.month > 12)
+        if (D.day < 1 || D.day > 28 || D.month < 1 || D.month > 12 || D.year < 2000)
         { // 28 is picked for convenience (because February only has 28 days)
             printf("Invalid date\n");
             continue;
@@ -160,6 +162,8 @@ void plannedSaving()
     double interestRate;
     char savingTitle[100], filename[100];
 
+    printf("+-------------+\n|Planned Saving|\n+-------------+\n");
+
     // Deposit title length must be 5 - 30 characters
     do
     {
@@ -167,11 +171,10 @@ void plannedSaving()
         scanf("%[^\n]", savingTitle);
         if (strlen(savingTitle) < 5 || strlen(savingTitle) > 30)
             printf("Title length must be 5 - 30 characters\n");
+        fflush(stdin);
     } while (strlen(savingTitle) < 5 || strlen(savingTitle) > 30);
-    fflush(stdin);
     strcpy(plannedSavingTitleList[z], savingTitle);
     z++;
-
 
     sprintf(filename, "Planned_Saving_Report_%s.txt", savingTitle);
     FILE *plannedSavingReport = fopen(filename, "w");
@@ -197,12 +200,12 @@ void plannedSaving()
     fflush(stdin);
 
     struct Date D;
-    // Date of SAVING + validation
+    // Date of saving + validation
     do
     {
         printf("Date of saving (dd-mm-yyyy): ");
         scanf("%d-%d-%d", &D.day, &D.month, &D.year);
-        if (D.day < 1 || D.day > 28 || D.month < 1 || D.month > 12)
+        if (D.day < 1 || D.day > 28 || D.month < 1 || D.month > 12 || D.year < 2020)
         { // 28 is picked for convenience (because February only has 28 days)
             printf("Invalid date\n");
             continue;
@@ -317,7 +320,7 @@ void searchDeposit(struct Date D_Start, struct Date D_End)
     int option;
     char title[50];
     printf("1. All Deposit\n");
-    for(int i = 0; i < y; i++)
+    for (int i = 0; i < y; i++)
     {
         printf("%d. %s\n", i + 2, depoTitleList[i]);
     }
@@ -329,10 +332,11 @@ void searchDeposit(struct Date D_Start, struct Date D_End)
     {
         if (savingList[i].type == 1 && compareDate(savingList[i].date, D_Start, D_End))
         {
-            if(option == 1)
-            printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
-            else{
-                if(strcmp(savingList[i].title, title) == 0)
+            if (option == 1)
+                printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
+            else
+            {
+                if (strcmp(savingList[i].title, title) == 0)
                     printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
             }
         }
@@ -346,7 +350,7 @@ void searchPlannedSaving(struct Date D_Start, struct Date D_End)
     char title[50];
     int option;
     printf("1. All Planned Saving\n");
-    for(int i = 0; i < z; i++)
+    for (int i = 0; i < z; i++)
     {
         printf("%d. %s\n", i + 2, plannedSavingTitleList[i]);
     }
@@ -358,10 +362,11 @@ void searchPlannedSaving(struct Date D_Start, struct Date D_End)
     {
         if (savingList[i].type == 2 && compareDate(savingList[i].date, D_Start, D_End))
         {
-            if(option == 1)
+            if (option == 1)
                 printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
-            else{
-                if(strcmp(savingList[i].title, title) == 0)
+            else
+            {
+                if (strcmp(savingList[i].title, title) == 0)
                     printf("| %-2d-%-2d-%-4d | Rp %-11d | %-30s |\n", savingList[i].date.day, savingList[i].date.month, savingList[i].date.year, savingList[i].savingAmount, savingList[i].title);
             }
         }
@@ -375,10 +380,23 @@ void searchsaving()
     struct Date D_Start, D_End;
     printf("Time Period\n");
     printf("From (dd-mm-yyyy): ");
-    scanf("%d-%d-%d", &D_Start.day, &D_Start.month, &D_Start.year);
+    do
+    {
+        scanf("%d-%d-%d", &D_Start.day, &D_Start.month, &D_Start.year);
+        fflush(stdin);
+        if (D_Start.day < 1 || D_Start.day > 28 || D_Start.month < 1 || D_Start.month > 12 || D_Start.year < 2000)
+            printf("Invalid Date\n");
+    } while (D_Start.day < 1 || D_Start.day > 28 || D_Start.month < 1 || D_Start.month > 12 || D_Start.year < 2000);
     printf("To (dd-mm-yyyy): ");
-    scanf("%d-%d-%d", &D_End.day, &D_End.month, &D_End.year);
-    fflush(stdin);
+    do
+    {
+        scanf("%d-%d-%d", &D_End.day, &D_End.month, &D_End.year);
+        fflush(stdin);
+        if (D_End.day < 1 || D_End.day > 28 || D_End.month < 1 || D_End.month > 12 || D_End.year < 2000 || D_End.year < D_Start.year || (D_End.year == D_Start.year && D_End.month < D_Start.month) || (D_End.year == D_Start.year && D_End.month == D_Start.month && D_End.day < D_Start.day))
+            printf("Invalid Date\n");
+    } while (D_End.day < 1 || D_End.day > 28 || D_End.month < 1 || D_End.month > 12 || D_End.year < 2000 ||
+             D_End.year < D_Start.year || (D_End.year == D_Start.year && D_End.month < D_Start.month) ||
+             (D_End.year == D_Start.year && D_End.month == D_Start.month && D_End.day < D_Start.day));
 
     printf("Type of saving:\n");
     printf("1. All\n");
@@ -409,13 +427,10 @@ void searchsaving()
 // Main Menu
 int main()
 {
-
-    FILE *customerData = fopen("Customer_Data.txt", "r");
-    char userName[100], password[100];
     int option;
     char repeat;
     printf("Welcome to Bee Bank\n");
-
+    printf("------------------------");
     do
     {
         printf("Saving Menu\n");

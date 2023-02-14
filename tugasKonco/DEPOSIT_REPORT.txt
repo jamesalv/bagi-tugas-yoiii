@@ -1,0 +1,5 @@
+BEE BANK Deposit Report
+
+Deposit Report 1
+Deposit on the month 1: Rp.1003333.00    
+Deposit on the month 2: Rp.1006677.00    
